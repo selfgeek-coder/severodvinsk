@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Северодвинск | Город у моря</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky:     #0d1b3e;
+    --sea-0:   #0a2044;
+    --sea-1:   #071a38;
+    --sea-2:   #05132c;
+    --sea-3:   #030d20;
+    --sea-4:   #020810;
+    --sea-5:   #010408;
+    --gold:    #c9a84c;
+    --gold-lt: #e8c97a;
+    --ice:     #d6e8f5;
+    --white:   #f0f4f8;
+    --muted:   rgba(214,232,245,0.55);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--sky);
+    color: var(--white);
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  .depth-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: linear-gradient(to bottom,
+      var(--sea-0) 0%, var(--sea-1) 20%, var(--sea-2) 40%,
+      var(--sea-3) 60%, var(--sea-4) 80%, var(--sea-5) 100%);
+    opacity: 0; transition: opacity 0.05s linear;
+  }
+
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+
+  /* ── NAV ─────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: linear-gradient(to bottom, rgba(5,19,44,0.97), transparent);
+    backdrop-filter: blur(4px);
+    transition: padding 0.3s;
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 600; letter-spacing: 0.12em;
+    color: var(--gold-lt); text-decoration: none;
+    flex-shrink: 0;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.3s;
+    white-space: nowrap;
+  }
+  .nav-links a:hover { color: var(--gold-lt); }
+
+  /* Burger button */
+  .burger {
+    display: none;
+    flex-direction: column; justify-content: center; align-items: center;
+    gap: 5px; width: 40px; height: 40px;
+    background: none; border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 4px; cursor: pointer; padding: 0;
+    flex-shrink: 0; transition: border-color 0.3s;
+  }
+  .burger:hover { border-color: var(--gold); }
+  .burger span {
+    display: block; width: 20px; height: 1.5px;
+    background: var(--gold-lt);
+    transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), opacity 0.3s, width 0.3s;
+    transform-origin: center;
+  }
+  .burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .burger.open span:nth-child(2) { opacity: 0; width: 0; }
+  .burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* Mobile nav drawer */
+  .mobile-nav {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 190;
+    background: rgba(3,13,32,0.98);
+    backdrop-filter: blur(16px);
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 0;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .mobile-nav.open {
+    opacity: 1; pointer-events: all;
+  }
+  .mobile-nav-links {
+    list-style: none;
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+    width: 100%;
+  }
+  .mobile-nav-links li {
+    width: 100%; border-bottom: 1px solid rgba(201,168,76,0.08);
+  }
+  .mobile-nav-links li:first-child { border-top: 1px solid rgba(201,168,76,0.08); }
+  .mobile-nav-links a {
+    display: block; padding: 1.6rem 2rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 300;
+    letter-spacing: 0.05em; text-align: center;
+    color: var(--white); text-decoration: none;
+    transition: color 0.3s, background 0.3s;
+  }
+  .mobile-nav-links a:hover, .mobile-nav-links a:active {
+    color: var(--gold-lt);
+    background: rgba(201,168,76,0.05);
+  }
+
+  /* ── HERO ─────────────────────────────────────────── */
+  #hero {
+    position: relative; height: 100vh; min-height: 580px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden; z-index: 2;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(20,60,120,0.45), transparent),
+      linear-gradient(180deg, #06193a 0%, #041226 60%, #020c1a 100%);
+  }
+  .stars { position: absolute; inset: 0; overflow: hidden; }
+  .star {
+    position: absolute; width: 2px; height: 2px; border-radius: 50%;
+    background: #fff; opacity: 0;
+    animation: twinkle var(--d, 4s) var(--del, 0s) infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0; transform: scale(1); }
+    50%      { opacity: var(--op, 0.7); transform: scale(1.4); }
+  }
+  .sub {
+    position: absolute; bottom: 22%; right: 8%;
+    width: clamp(180px, 30vw, 340px); opacity: 0.07;
+    animation: subFloat 8s ease-in-out infinite;
+  }
+  @keyframes subFloat {
+    0%,100% { transform: translateY(0) rotate(-1deg); }
+    50%      { transform: translateY(-18px) rotate(1deg); }
+  }
+  .hero-tag {
+    font-size: clamp(0.7rem, 2vw, 0.9rem); letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.4rem;
+    animation: fadeUp 1s 0.3s both;
+    text-align: center; padding: 0 1rem;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 9vw, 7.5rem);
+    font-weight: 300; line-height: 0.95;
+    text-align: center; letter-spacing: 0.05em;
+    animation: fadeUp 1s 0.5s both;
+    padding: 0 1rem;
+  }
+  .hero-sub {
+    margin-top: 1.6rem; font-size: clamp(0.75rem, 2vw, 0.85rem); letter-spacing: 0.10em;
+    color: var(--muted); text-align: center; max-width: 400px;
+    animation: fadeUp 1s 0.7s both;
+    padding: 0 1.5rem;
+    line-height: 1.9;
+  }
+  .wave-wrap {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 130px; overflow: hidden;
+  }
+  .wave {
+    position: absolute; bottom: 0; width: 200%; height: 100%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 130'%3E%3Cpath fill='%23041226' d='M0,64 C180,100 360,20 540,64 C720,108 900,20 1080,64 C1260,108 1350,40 1440,64 L1440,130 L0,130Z'/%3E%3C/svg%3E") repeat-x bottom;
+  }
+  .wave1 { animation: waveMov 7s linear infinite; opacity: 0.6; background-size: 50% auto; }
+  .wave2 { animation: waveMov 11s linear infinite reverse; opacity: 0.4; background-size: 60% auto; }
+  .wave3 { animation: waveMov 14s linear infinite; opacity: 1; background-size: 70% auto; }
+  @keyframes waveMov { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTIONS ─────────────────────────────────────── */
+  section { position: relative; z-index: 2; }
+  .section-inner { max-width: 1100px; margin: 0 auto; padding: 7rem 2rem; }
+  .section-label {
+    font-size: 0.8rem; letter-spacing: 0.45em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; max-width: 60px; height: 1px;
+    background: var(--gold); opacity: 0.5;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    font-weight: 300; line-height: 1.1; margin-bottom: 1.5rem;
+  }
+  .section-title em { font-style: italic; color: var(--gold-lt); }
+  .divider {
+    width: 100%; height: 1px; max-width: 1100px; margin: 0 auto;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent);
+  }
+
+  /* ── STATS ROW ────────────────────────────────────── */
+  .stats-row {
+    display: flex; justify-content: center;
+    flex-wrap: wrap; gap: 2.5rem 5rem;
+    padding: 3.5rem 1.5rem;
+    border-top: 1px solid rgba(201,168,76,0.1);
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    margin: 4rem 0;
+  }
+  .stat-item { text-align: center; min-width: 110px; }
+  .stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 300; color: var(--gold-lt);
+    display: block; line-height: 1;
+    white-space: nowrap;
+  }
+  .stat-label {
+    font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--muted); margin-top: 0.5rem; display: block;
+  }
+
+  /* ── HISTORY ──────────────────────────────────────── */
+  .history-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+    align-items: start; margin-top: 3.5rem;
+  }
+  .history-text p {
+    font-size: 0.95rem; line-height: 1.9; color: var(--muted);
+    margin-bottom: 1.2rem; font-weight: 300;
+  }
+  .history-text p strong { color: var(--white); font-weight: 500; }
+  .year-badge {
+    display: inline-block; padding: 0.15rem 0.7rem;
+    border: 1px solid var(--gold); color: var(--gold);
+    font-size: 0.68rem; letter-spacing: 0.25em; margin-bottom: 1.2rem;
+  }
+  .timeline { margin-top: 2.5rem; }
+  .tl-item {
+    display: flex; gap: 1.5rem; margin-bottom: 1.8rem;
+    opacity: 0; transform: translateX(-20px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .tl-item.visible { opacity: 1; transform: translateX(0); }
+  .tl-year {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 600; color: var(--gold);
+    min-width: 80px; line-height: 1; flex-shrink: 0;
+  }
+  .tl-text { font-size: 0.85rem; line-height: 1.7; color: var(--muted); padding-top: 0.2rem; }
+  .tl-text strong { color: var(--white); display: block; margin-bottom: 0.25rem; font-weight: 500; }
+
+  /* ── PHOTO TILE GALLERY ───────────────────────────── */
+  .gallery-section { margin-top: 4rem; }
+  .gallery-top-bar {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 1.8rem; flex-wrap: wrap; gap: 0.8rem;
+  }
+  .gallery-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 300; line-height: 1.1; color: var(--white);
+  }
+  .gallery-heading em { font-style: italic; color: var(--gold-lt); }
+  .gallery-total-badge {
+    font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold); border: 1px solid rgba(201,168,76,0.25);
+    padding: 0.35rem 0.9rem; border-radius: 2px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  .photo-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: 220px 220px;
+    gap: 8px;
+  }
+  .photo-tile:nth-child(1) { grid-column: span 2; }
+  .photo-tile:nth-child(3) { grid-row: span 2; }
+  .photo-tile:nth-child(6) { grid-column: span 2; }
+
+  .photo-tile {
+    position: relative; overflow: hidden;
+    border-radius: 3px;
+    border: 1px solid rgba(201,168,76,0.1);
+    cursor: pointer;
+    background: var(--sea-3);
+  }
+  .photo-tile::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(2,8,22,0.82) 0%, rgba(2,8,22,0.1) 45%, transparent 100%);
+    transition: opacity 0.35s;
+  }
+  .photo-tile:hover::after { opacity: 0.7; }
+  .photo-tile img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: sepia(30%) brightness(0.65) contrast(1.15) saturate(0.85);
+    transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.5s;
+  }
+  .photo-tile:hover img {
+    transform: scale(1.07);
+    filter: sepia(5%) brightness(0.8) contrast(1.05) saturate(1);
+  }
+  .photo-tile-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 0.85rem 1rem 0.8rem; z-index: 2;
+    transform: translateY(4px); transition: transform 0.3s;
+  }
+  .photo-tile:hover .photo-tile-info { transform: translateY(0); }
+  .photo-tile-caption {
+    font-size: 0.8rem; letter-spacing: 0.08em;
+    color: var(--ice); line-height: 1.35;
+    display: block; margin-bottom: 0.2rem;
+  }
+  .photo-tile-year {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem; color: var(--gold); letter-spacing: 0.1em;
+  }
+  .photo-tile-num {
+    position: absolute; top: 0.7rem; left: 0.8rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem; color: rgba(201,168,76,0.6);
+    z-index: 2; line-height: 1;
+  }
+  .photo-tile-zoom {
+    position: absolute; top: 0.7rem; right: 0.8rem;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; z-index: 2;
+    opacity: 0; transform: scale(0.7);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .photo-tile:hover .photo-tile-zoom { opacity: 1; transform: scale(1); }
+
+  /* ── MODAL ────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(1,4,12,0.96);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+    padding: 1rem;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-inner {
+    position: relative;
+    max-width: 900px; width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1.2rem;
+  }
+  .modal-close {
+    position: absolute; top: -0.05rem; right: 0;
+    background: none; border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold); width: 38px; height: 38px; border-radius: 50%;
+    font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s, border-color 0.3s;
+    z-index: 5; flex-shrink: 0;
+  }
+  .modal-close:hover { background: rgba(201,168,76,0.12); border-color: var(--gold); }
+  .modal-img-wrap {
+    position: relative; width: 100%;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 3px; overflow: hidden;
+    background: #010408;
+    aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-img {
+    max-width: 100%; max-height: 60vh;
+    width: 100%; height: 100%; object-fit: contain;
+    filter: sepia(10%) brightness(0.9);
+    transition: opacity 0.3s;
+  }
+  .modal-img.fading { opacity: 0; }
+  .modal-nav-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(2,10,30,0.85);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-lt); font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s, border-color 0.3s;
+    z-index: 2; flex-shrink: 0;
+  }
+  .modal-nav-btn:hover { border-color: var(--gold); }
+  .modal-prev { left: 0.5rem; }
+  .modal-next { right: 0.5rem; }
+  .modal-footer { text-align: center; width: 100%; }
+  .modal-caption {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 3vw, 1.2rem); font-style: italic;
+    color: var(--ice); margin-bottom: 0.5rem; line-height: 1.5;
+  }
+  .modal-meta { font-size: 0.85rem; color: var(--gold); margin-bottom: 0.8rem; }
+  .modal-thumbs {
+    display: flex; gap: 6px; justify-content: center; flex-wrap: nowrap;
+    overflow-x: auto; padding-bottom: 4px;
+    scrollbar-width: thin; scrollbar-color: rgba(201,168,76,0.3) transparent;
+  }
+  .modal-thumb {
+    flex: 0 0 54px; height: 38px; border-radius: 2px;
+    overflow: hidden; cursor: pointer;
+    border: 1px solid transparent;
+    transition: border-color 0.3s, opacity 0.3s;
+    opacity: 0.45;
+  }
+  .modal-thumb.active { border-color: var(--gold); opacity: 1; }
+  .modal-thumb img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%); }
+  .modal-counter-label {
+    font-size: 0.68rem; letter-spacing: 0.2em; color: var(--muted);
+    margin-bottom: 0.6rem; display: block;
+  }
+
+  /* ── ATTRACTIONS ──────────────────────────────────── */
+  .attr-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+    margin-top: 3.5rem;
+  }
+  .attr-card {
+    position: relative; overflow: hidden;
+    border: 1px solid rgba(201,168,76,0.12); border-radius: 3px;
+    background: rgba(6,25,58,0.4); backdrop-filter: blur(8px);
+    transition: transform 0.4s, border-color 0.4s, box-shadow 0.4s;
+    opacity: 0; transform: translateY(40px);
+  }
+  .attr-card.visible { opacity: 1; transform: translateY(0); }
+  .attr-card:nth-child(1) { transition-delay: 0s; }
+  .attr-card:nth-child(2) { transition-delay: 0.15s; }
+  .attr-card:nth-child(3) { transition-delay: 0.3s; }
+  .attr-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(201,168,76,0.45);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,168,76,0.06);
+  }
+  .attr-img {
+    width: 100%; height: 220px; object-fit: cover; display: block;
+    filter: brightness(0.7) saturate(0.8);
+    transition: filter 0.5s, transform 0.5s;
+  }
+  .attr-card:hover .attr-img { filter: brightness(0.85) saturate(1); transform: scale(1.04); }
+  .attr-body { padding: 2.2rem 1.5rem 1.8rem; }
+  .attr-body h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 600; margin-bottom: 0.8rem;
+    color: var(--white); line-height: 1.2;
+  }
+  .attr-body p { font-size: 0.9rem; line-height: 1.8; color: var(--muted); font-weight: 300; }
+  .glow-line {
+    display: block; width: 50px; height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 1.5rem 0;
+  }
+
+  /* ── FACTS ────────────────────────────────────────── */
+  .facts-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;
+    margin-top: 3.5rem;
+  }
+  .fact-card {
+    padding: 2.2rem 2rem;
+    border-left: 2px solid rgba(201,168,76,0.3);
+    background: rgba(4,18,38,0.5); backdrop-filter: blur(6px);
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.6s, transform 0.6s, border-color 0.3s;
+    border-radius: 0 3px 3px 0;
+  }
+  .fact-card.visible { opacity: 1; transform: translateY(0); }
+  .fact-card:nth-child(1) { transition-delay: 0s; }
+  .fact-card:nth-child(2) { transition-delay: 0.1s; }
+  .fact-card:nth-child(3) { transition-delay: 0.2s; }
+  .fact-card:nth-child(4) { transition-delay: 0.3s; }
+  .fact-card:hover { border-color: var(--gold); }
+  .fact-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem; font-weight: 700; color: var(--gold);
+    line-height: 1; margin-bottom: 0.5rem;
+  }
+  .fact-title {
+    font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.8rem;
+  }
+  .fact-text { font-size: 0.88rem; line-height: 1.8; color: var(--muted); font-weight: 300; }
+  .fact-text strong { color: var(--white); font-weight: 500; }
+
+  /* ── FOOTER ───────────────────────────────────────── */
+  footer {
+    position: relative; z-index: 2;
+    padding: 4rem 2rem 3rem; text-align: center;
+    border-top: 1px solid rgba(201,168,76,0.08);
+    background: rgba(1,4,8,0.7);
+  }
+  footer p { font-size: 0.72rem; letter-spacing: 0.15em; color: rgba(214,232,245,0.3); }
+
+  /* ── REVEAL ───────────────────────────────────────── */
+  .reveal {
+    opacity: 0; transform: translateY(35px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── QUOTE BOX ────────────────────────────────────── */
+  .quote-box {
+    padding: 2rem; border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 2px; background: rgba(6,25,58,0.3);
+  }
+  .quote-box blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    font-style: italic; line-height: 1.7;
+    color: var(--ice); margin-bottom: 1rem;
+  }
+  .quote-author {
+    font-size: 0.65rem; letter-spacing: 0.2em; color: var(--gold);
+  }
+
+  /* ══════════════════════════════════════════════════
+     RESPONSIVE BREAKPOINTS
+  ══════════════════════════════════════════════════ */
+
+  /* ── ≤ 1024px ─────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    nav { padding: 1rem 2rem; }
+    .attr-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .attr-card:nth-child(3) { grid-column: span 2; }
+    .attr-card:nth-child(3) .attr-img { height: 280px; }
+    .history-grid { gap: 3rem; }
+  }
+
+  /* ── ≤ 860px ──────────────────────────────────────── */
+  @media (max-width: 860px) {
+    /* NAV */
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .burger { display: flex; }
+    .mobile-nav { display: flex; }
+
+    /* SECTION */
+    .section-inner { padding: 5rem 1.5rem; }
+
+    /* HISTORY */
+    .history-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+
+    /* GALLERY */
+    .photo-tile-grid {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 170px);
+    }
+    .photo-tile:nth-child(1) { grid-column: span 2; }
+    .photo-tile:nth-child(3) { grid-row: span 1; }
+    .photo-tile:nth-child(6) { grid-column: span 2; }
+
+    /* ATTRACTIONS */
+    .attr-grid { grid-template-columns: 1fr; }
+    .attr-card:nth-child(3) { grid-column: span 1; }
+
+    /* FACTS */
+    .facts-grid { grid-template-columns: 1fr; }
+
+    /* STATS */
+    .stats-row { gap: 2rem 3rem; }
+  }
+
+  /* ── ≤ 640px ──────────────────────────────────────── */
+  @media (max-width: 640px) {
+    nav { padding: 0.9rem 1.2rem; }
+    .nav-logo { font-size: 1.15rem; }
+
+    .section-inner { padding: 4rem 1.2rem; }
+
+    /* GALLERY */
+    .photo-tile-grid {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(6, 140px);
+    }
+    .photo-tile:nth-child(1) { grid-column: span 2; }
+    .photo-tile:nth-child(3) { grid-row: span 1; grid-column: span 1; }
+    .photo-tile:nth-child(6) { grid-column: span 2; }
+
+    /* STATS */
+    .stats-row { gap: 1.5rem 2rem; padding: 2.5rem 1rem; }
+    .stat-item { min-width: 100px; }
+
+    /* MODAL */
+    .modal-close {
+      top: -0.3rem; right: -0.3rem;
+      width: 34px; height: 34px; font-size: 0.9rem;
+    }
+    .modal-nav-btn { width: 38px; height: 38px; font-size: 0.9rem; }
+    .modal-prev { left: 0.3rem; }
+    .modal-next { right: 0.3rem; }
+    .modal-thumb { flex: 0 0 44px; height: 32px; }
+    .modal-img { max-height: 50vh; }
+
+    /* FACTS */
+    .fact-card { padding: 1.5rem 1.2rem; }
+    .fact-num { font-size: 2.8rem; }
+
+    /* ATTR */
+    .attr-body { padding: 1.5rem 1.2rem 1.4rem; }
+    .attr-img { height: 200px; }
+  }
+
+  /* ── ≤ 400px ──────────────────────────────────────── */
+  @media (max-width: 400px) {
+    .nav-logo { font-size: 1rem; letter-spacing: 0.06em; }
+
+    .photo-tile-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(6, 120px);
+    }
+    .photo-tile-caption { display: none; }
+
+    .stats-row { flex-direction: column; align-items: center; gap: 1.5rem; }
+    .stat-item { width: 100%; max-width: 200px; }
+
+    .section-title { font-size: 1.8rem; }
+    .gallery-heading { font-size: 1.2rem; }
+    .gallery-top-bar { flex-direction: column; align-items: flex-start; }
+    .gallery-total-badge { align-self: flex-start; }
+  }
+
+  /* ── Touch hover fix ──────────────────────────────── */
+  @media (hover: none) {
+    .photo-tile-zoom { display: none; }
+    .photo-tile-info { transform: translateY(0); }
+    .photo-tile::after { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="depth-bg" id="depthBg"></div>
+<canvas id="particles"></canvas>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="photoModal" role="dialog" aria-modal="true">
+  <div class="modal-inner">
+    <button class="modal-close" id="modalClose" aria-label="Закрыть">✕</button>
+    <div class="modal-img-wrap">
+      <button class="modal-nav-btn modal-prev" id="modalPrev">&#8249;</button>
+      <img class="modal-img" id="modalImg" src="" alt="">
+      <button class="modal-nav-btn modal-next" id="modalNext">&#8250;</button>
+    </div>
+    <div class="modal-footer">
+      <p class="modal-caption" id="modalCaption"></p>
+      <p class="modal-meta" id="modalMeta"></p>
+      <span class="modal-counter-label" id="modalCounter"></span>
+      <div class="modal-thumbs" id="modalThumbs"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true" aria-label="Навигация">
+  <ul class="mobile-nav-links">
+    <li><a href="#history" class="mobile-link">История</a></li>
+    <li><a href="#attractions" class="mobile-link">Достопримечательности</a></li>
+    <li><a href="#facts" class="mobile-link">Факты</a></li>
+  </ul>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">СЕВЕРОДВИНСК</a>
+  <ul class="nav-links">
+    <li><a href="#history">История</a></li>
+    <li><a href="#attractions">Достопримечательности</a></li>
+    <li><a href="#facts">Факты</a></li>
+  </ul>
+  <button class="burger" id="burgerBtn" aria-label="Меню" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="stars" id="starsContainer"></div>
+  <svg class="sub" viewBox="0 0 500 160" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="240" cy="95" rx="215" ry="45"/>
+    <rect x="190" y="52" width="80" height="40" rx="8"/>
+    <rect x="210" y="30" width="80" height="25" rx="8"/>
+    <circle cx="140" cy="95" r="12" fill="none" stroke="white" stroke-width="4"/>
+    <circle cx="200" cy="95" r="12" fill="none" stroke="white" stroke-width="4"/>
+  </svg>
+  <p class="hero-tag">Россия · Архангельская область</p>
+  <h1 class="hero-title">Северодвинск</h1>
+  <p class="hero-sub">Город корабелов, морей и северного духа —<br>на берегу Белого моря</p>
+  <div class="wave-wrap">
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="section-inner" style="padding-top:2rem; padding-bottom: 0;">
+  <div class="stats-row reveal">
+    <div class="stat-item"><span class="stat-value">1938</span><span class="stat-label">Год основания</span></div>
+    <div class="stat-item"><span class="stat-value">~180 тыс.</span><span class="stat-label">Жителей</span></div>
+    <div class="stat-item"><span class="stat-value">250+</span><span class="stat-label">км²</span></div>
+    <div class="stat-item"><span class="stat-value">86</span><span class="stat-label">лет истории</span></div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<section id="history">
+  <div class="section-inner">
+    <p class="section-label reveal">История города</p>
+    <h2 class="section-title reveal">От <em>Судостроя</em><br>до Северодвинска</h2>
+
+    <div class="history-grid">
+      <div class="history-text">
+        <div class="year-badge reveal">1936–1957</div>
+        <p class="reveal"><strong>Рождение города</strong> началось в 1936 году на диком берегу Белого моря. Среди болот и тайги тысячи рабочих начали возводить промышленный гигант — <strong>судостроительный завод № 402</strong>. В это время строящийся рабочий поселок носил лаконичное название <strong>Судострой</strong>.</p>
+        <p class="reveal">В <strong>1938 году</strong> Судострой официально получил статус города и новое имя — <strong><em>Молотовск</em></strong>. Его облик формировался в строгом сталинском стиле: с монументальными зданиями, широкими проспектами и зелеными парками.</p>
+        <p class="reveal">В годы <strong>Великой Отечественной войны</strong> город приобрел стратегическое значение: именно здесь принимались и ремонтировались союзнические корабли северных конвоев. Корабелы работали в нечеловеческих условиях, обеспечивая фронт.</p>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-year">1936</div><div class="tl-text"><strong>Поселок Судострой</strong>Начало строительства завода № 402 и первого рабочего поселения в суровых условиях Севера.</div></div>
+          <div class="tl-item"><div class="tl-year">1938</div><div class="tl-text"><strong>Город Молотовск</strong>Поселок Судострой получает статус города и официальное название в честь Вячеслава Молотова.</div></div>
+          <div class="tl-item"><div class="tl-year">1953</div><div class="tl-text"><strong>Атомная программа</strong>Город становится ключевым центром строительства первых советских атомных подводных лодок.</div></div>
+          <div class="tl-item"><div class="tl-year">1957</div><div class="tl-text"><strong>Переименование</strong>После политических перемен в стране город получает свое современное имя — Северодвинск.</div></div>
+          <div class="tl-item"><div class="tl-year">2020</div><div class="tl-text"><strong>Город трудовой доблести</strong>Почетное звание за массовый трудовой героизм и вклад в Победу в Великой Отечественной войне.</div></div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="quote-box">
+          <blockquote>«Здесь, на краю земли, среди белых ночей и арктических морозов, рождалась мощь советского флота»</blockquote>
+          <span class="quote-author">— Из хроник города</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="gallery-section reveal">
+      <div class="gallery-top-bar">
+        <div>
+          <p class="section-label" style="margin-bottom:0.4rem;">Фотохроника</p>
+          <h3 class="gallery-heading">Молотовск и Северодвинск в <em>объективе</em></h3>
+        </div>
+        <span class="gallery-total-badge">10 фотографий · 1936–1950</span>
+      </div>
+      <div class="photo-tile-grid" id="photoTileGrid"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider reveal"></div>
+
+<!-- ATTRACTIONS -->
+<section id="attractions">
+  <div class="section-inner">
+    <p class="section-label reveal">Что посмотреть</p>
+    <h2 class="section-title reveal"><em>Достопримечательности</em></h2>
+    <p class="reveal" style="font-size:0.9rem; color: var(--muted); max-width: 520px; line-height: 1.8; margin-bottom: 0.5rem;">
+      Северодвинск бережно хранит свою уникальную историю —<br>от деревянных церквей поморских сел до стальных корпусов атомных субмарин.
+    </p>
+    <div class="attr-grid">
+      <div class="attr-card">
+        <img src="images/foto-muzey.jpg" alt="Музей судостроения и флота" class="attr-img">
+        <div class="attr-body">
+          <h3>Музей судостроения и флота</h3>
+          <span class="glow-line"></span>
+          <p>Единственный в России музей, посвященный истории отечественного военного кораблестроения. Уникальная коллекция моделей кораблей — от деревянных поморских судов до атомных подводных лодок.</p>
+        </div>
+      </div>
+      <div class="attr-card">
+        <img src="images/foto-stela.jpg" alt="Стела Город трудовой доблести" class="attr-img">
+        <div class="attr-body">
+          <h3>Стела «Город трудовой доблести»</h3>
+          <span class="glow-line"></span>
+          <p>Величественный монумент, установленный в честь присвоения Северодвинску почетного звания в 2020 году. Стела увековечивает подвиг корабелов, которые в годы войны ковали победу в цехах завода.</p>
+        </div>
+      </div>
+      <div class="attr-card">
+        <img src="images/foto-miritrud.jpg" alt="Мир и Труд" class="attr-img">
+        <div class="attr-body">
+          <h3>Скульптурно-мемориальная композиция «Мир и Труд»</h3>
+          <span class="glow-line"></span>
+          <p>Посвящена пятидесятилетию города Северодвинска. В скульптурных группах изображены все профессии, имеющие отношение к градообразующему предприятию.</p>
+        </div>
+      </div>
+      <div class="attr-card">
+        <img src="images/foto-fire.jpg" alt="Название" class="attr-img">
+        <div class="attr-body">
+          <h3>Вечный огонь</h3>
+          <span class="glow-line"></span>
+          <p>Вечный огонь в Северодвинске - мемориал, посвященный памяти погибших в годы Великой Отечественной войны. Он символизирует вечную память о подвиге народа и является важным местом для проведения памятных мероприятий и возложения цветов.</p>
+        </div>
+      </div>
+      <div class="attr-card">
+        <img src="images/foto-monastir.jpg" alt="Название" class="attr-img">
+        <div class="attr-body">
+          <h3>Николо-Корельский монастырь</h3>
+          <span class="glow-line"></span>
+          <p>Один из древнейших монастырей Русского Севера, основанный в XV веке и связанный с ранней историей региона.</p>
+        </div>
+      </div>
+      <div class="attr-card">
+        <img src="images/foto-lomonosov.jpg" alt="Название" class="attr-img">
+        <div class="attr-body">
+          <h3>Памятник Михаилу Ломоносову</h3>
+          <span class="glow-line"></span>
+          <p>Памятник великому ученому, установленный в городе и отражающий связь Русского Севера с его историей и культурой.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider reveal"></div>
+
+<!-- FACTS -->
+<section id="facts">
+  <div class="section-inner">
+    <p class="section-label reveal">Интересное</p>
+    <h2 class="section-title reveal">Факты о <em>городе</em></h2>
+    <div class="facts-grid">
+      <div class="fact-card"><div class="fact-num">01</div><div class="fact-title">Белые ночи</div><p class="fact-text">Северодвинск находится за <strong>64-й параллелью</strong>, поэтому с конца мая по середину июля солнце почти не заходит. Белые ночи здесь особенно магические.</p></div>
+      <div class="fact-card"><div class="fact-num">02</div><div class="fact-title">Атомный флот</div><p class="fact-text">На Севмаше построено <strong>более 130 атомных подводных лодок</strong> — больше, чем в любой другой точке мира.</p></div>
+      <div class="fact-card"><div class="fact-num">03</div><div class="fact-title">Закрытый город</div><p class="fact-text">До <strong>1992 года</strong> Северодвинск был закрытым ЗАТО. Попасть в город можно было только по специальному пропуску.</p></div>
+      <div class="fact-card"><div class="fact-num">04</div><div class="fact-title">Поморское наследие</div><p class="fact-text">Рядом находится <strong>село Ненокса</strong> — одно из древнейших поморских поселений России, основанное в XII–XIII веках.</p></div>
+      <div class="fact-card"><div class="fact-num">05</div><div class="fact-title">Северные конвои</div><p class="fact-text">В годы войны Молотовск был конечной точкой <strong>союзнических арктических конвоев</strong>, доставлявших грузы по ленд-лизу.</p></div>
+      <div class="fact-card"><div class="fact-num">06</div><div class="fact-title">Морской лед</div><p class="fact-text">Белое море — единственное внутреннее море России, которое <strong>полностью замерзает</strong> каждую зиму.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p style="margin-top:0.1rem; font-size:0.8rem;">
+      <a href="https://yandex.ru/maps/?pt=39.8167,64.55&z=10&l=map" target="_blank" style="color: inherit; text-decoration: underline;">
+        Россия · Архангельская область · На берегу Белого моря
+      </a>
+  </p>
+
+  <div style="margin-top:0.7rem;">
+    <a href="https://github.com/selfgeek-coder" target="_blank" style="display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:inherit;">
+      
+      <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38
+        0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+        -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+        .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+        0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82
+        .64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82
+        2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15
+        0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+        0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8
+        c0-4.42-3.58-8-8-8z"/>
+      </svg>
+
+      <span>GitHub</span>
+    </a>
+  </div>
+</footer>
+
+<script>
+// ── BURGER MENU ─────────────────────────────────────
+const burger    = document.getElementById('burgerBtn');
+const mobileNav = document.getElementById('mobileNav');
+
+function openMenu() {
+  burger.classList.add('open');
+  burger.setAttribute('aria-expanded', 'true');
+  mobileNav.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMenu() {
+  burger.classList.remove('open');
+  burger.setAttribute('aria-expanded', 'false');
+  mobileNav.classList.remove('open');
+  document.body.style.overflow = '';
+}
+burger.addEventListener('click', () => {
+  burger.classList.contains('open') ? closeMenu() : openMenu();
+});
+
+// Close on link click
+document.querySelectorAll('.mobile-link').forEach(link => {
+  link.addEventListener('click', closeMenu);
+});
+
+// Close on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && mobileNav.classList.contains('open')) closeMenu();
+});
+
+// ── PHOTO DATA ──────────────────────────────────────
+const PHOTOS = [
+  { src: 'images/foto-molotovsk-1.jpg',  caption: 'Улица Советская, Молотовск',           meta: '1939 год',  desc: 'Первая главная улица города. На заднем плане видны деревянные дома первой застройки' },
+  { src: 'images/foto-molotovsk-2.jpg',  caption: 'Строительство жилых кварталов',         meta: '1940 год',  desc: 'Два жилых дома' },
+  { src: 'images/foto-molotovsk-3.jpg',  caption: 'Кинотеатр "Россия"',                   meta: '~1940 год', desc: 'На афишах видна репертуарная программа того времени' },
+  { src: 'images/foto-molotovsk-4.jpg',  caption: 'Ягринский пляж',                       meta: '~1940 год', desc: 'Пляж на берегу Белого моря' },
+  { src: 'images/foto-molotovsk-5.jpg',  caption: 'Улица Профсоюзная',                    meta: '1939 год',  desc: 'На фото видна лодочная станция и строение школы №11' },
+  { src: 'images/foto-molotovsk-6.jpg',  caption: 'Парк культуры и отдыха',               meta: '1972 год',  desc: 'На фото видно как дети катаются на автодроме' },
+  { src: 'images/foto-molotovsk-7.jpg',  caption: 'В учебном отряде подводного плавания', meta: '1967 год',  desc: 'Леонид Брежнев в учебном отряде подводного плавания Беломорской Военной базы' },
+  { src: 'images/foto-molotovsk-8.jpg',  caption: 'Площадь имени М.В. Ломоносова',        meta: '1958 год',  desc: 'Возведение памятника имени М.В. Ломоносова' },
+  { src: 'images/foto-molotovsk-9.jpg',  caption: 'Драматический театр',                  meta: '1939 год',  desc: 'На фото виден Драматический театр, на афишах видны театры того времени' },
+  { src: 'images/foto-molotovsk-10.jpg', caption: 'Военный парад на площади',             meta: '1945 год',  desc: 'Военный оркестр, шеренги моряков и заводских рабочих, ликующая толпа' },
+];
+
+// ── BUILD PHOTO TILES ────────────────────────────────
+const tileGrid = document.getElementById('photoTileGrid');
+PHOTOS.forEach((p, i) => {
+  const tile = document.createElement('div');
+  tile.className = 'photo-tile';
+  tile.innerHTML = `
+    <img src="${p.src}" alt="${p.caption}" loading="lazy">
+    <span class="photo-tile-num">${String(i+1).padStart(2,'0')}</span>
+    <div class="photo-tile-zoom">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </div>
+    <div class="photo-tile-info">
+      <span class="photo-tile-caption">${p.caption}</span>
+      <span class="photo-tile-year">${p.meta}</span>
+    </div>
+  `;
+  tile.addEventListener('click', () => openModal(i));
+  tileGrid.appendChild(tile);
+});
+
+// ── MODAL ────────────────────────────────────────────
+let modalIndex = 0;
+const modal     = document.getElementById('photoModal');
+const modalImg  = document.getElementById('modalImg');
+const modalCap  = document.getElementById('modalCaption');
+const modalMeta = document.getElementById('modalMeta');
+const modalCnt  = document.getElementById('modalCounter');
+const thumbsEl  = document.getElementById('modalThumbs');
+
+PHOTOS.forEach((p, i) => {
+  const t = document.createElement('div');
+  t.className = 'modal-thumb';
+  t.dataset.index = i;
+  t.innerHTML = `<img src="${p.src}" alt="${p.caption}" loading="lazy">`;
+  t.addEventListener('click', () => setModalPhoto(i));
+  thumbsEl.appendChild(t);
+});
+
+function setModalPhoto(i) {
+  if (i < 0) i = PHOTOS.length - 1;
+  if (i >= PHOTOS.length) i = 0;
+  modalIndex = i;
+  modalImg.classList.add('fading');
+  setTimeout(() => {
+    modalImg.src = PHOTOS[i].src;
+    modalImg.alt = PHOTOS[i].caption;
+    modalImg.classList.remove('fading');
+  }, 150);
+  modalCap.textContent  = PHOTOS[i].caption;
+  modalMeta.textContent = PHOTOS[i].meta + ' — ' + PHOTOS[i].desc;
+  modalCnt.textContent  = `${i + 1} / ${PHOTOS.length}`;
+  thumbsEl.querySelectorAll('.modal-thumb').forEach((t, j) => {
+    t.classList.toggle('active', j === i);
+  });
+  const activeThumb = thumbsEl.children[i];
+  if (activeThumb) activeThumb.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
+}
+
+function openModal(i) {
+  setModalPhoto(i);
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalPrev').addEventListener('click', () => setModalPhoto(modalIndex - 1));
+document.getElementById('modalNext').addEventListener('click', () => setModalPhoto(modalIndex + 1));
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+document.addEventListener('keydown', (e) => {
+  if (!modal.classList.contains('open')) return;
+  if (e.key === 'ArrowLeft')  setModalPhoto(modalIndex - 1);
+  if (e.key === 'ArrowRight') setModalPhoto(modalIndex + 1);
+  if (e.key === 'Escape')     closeModal();
+});
+
+let touchStartX = 0;
+modal.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+modal.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) setModalPhoto(modalIndex + (dx < 0 ? 1 : -1));
+});
+
+// ── STARS ────────────────────────────────────────────
+const starsEl = document.getElementById('starsContainer');
+for (let i = 0; i < 120; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*70}%;--d:${3+Math.random()*5}s;--del:${Math.random()*5}s;--op:${0.3+Math.random()*0.7};width:${Math.random()<0.3?3:1.5}px;height:${Math.random()<0.3?3:1.5}px;`;
+  starsEl.appendChild(s);
+}
+
+// ── PARTICLES ────────────────────────────────────────
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+const PARTS = Array.from({length: 55}, () => ({
+  x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+  r: 0.5 + Math.random() * 2, vy: -(0.2 + Math.random() * 0.6),
+  vx: (Math.random() - 0.5) * 0.3, o: 0.05 + Math.random() * 0.2,
+}));
+function animParts() {
+  ctx.clearRect(0, 0, W, H);
+  const depth = getScrollDepth();
+  if (depth > 0.05) {
+    PARTS.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(100,180,255,${p.o * depth})`; ctx.fill();
+      p.y += p.vy; p.x += p.vx;
+      if (p.y < -10) { p.y = H+10; p.x = Math.random()*W; }
+    });
+  }
+  requestAnimationFrame(animParts);
+}
+animParts();
+
+function getScrollDepth() {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  return max > 0 ? window.scrollY / max : 0;
+}
+window.addEventListener('scroll', () => {
+  document.getElementById('depthBg').style.opacity = getScrollDepth().toFixed(3);
+});
+
+// ── INTERSECTION OBSERVER ────────────────────────────
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.reveal, .tl-item, .attr-card, .fact-card').forEach(el => io.observe(el));
+
+// ── MOUSE PARALLAX (desktop only) ───────────────────
+if (window.matchMedia('(hover: hover)').matches) {
+  document.addEventListener('mousemove', (e) => {
+    const xPct = (e.clientX / window.innerWidth - 0.5) * 10;
+    const yPct = (e.clientY / window.innerHeight - 0.5) * 6;
+    const sub = document.querySelector('.sub');
+    if (sub) sub.style.transform = `translate(${xPct*0.5}px, ${yPct*0.5}px)`;
+  });
+}
+</script>
+</body>
+</html>
