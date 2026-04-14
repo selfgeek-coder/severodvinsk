@@ -67,7 +67,6 @@
   }
   .nav-links a:hover { color: var(--gold-lt); }
 
-  /* Burger button */
   .burger {
     display: none;
     flex-direction: column; justify-content: center; align-items: center;
@@ -87,28 +86,22 @@
   .burger.open span:nth-child(2) { opacity: 0; width: 0; }
   .burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-  /* Mobile nav drawer */
   .mobile-nav {
     display: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 190;
     background: rgba(3,13,32,0.98);
     backdrop-filter: blur(16px);
     flex-direction: column; align-items: center; justify-content: center;
-    gap: 0;
     opacity: 0; pointer-events: none;
     transition: opacity 0.4s ease;
   }
-  .mobile-nav.open {
-    opacity: 1; pointer-events: all;
-  }
+  .mobile-nav.open { opacity: 1; pointer-events: all; }
   .mobile-nav-links {
     list-style: none;
-    display: flex; flex-direction: column; align-items: center; gap: 0;
+    display: flex; flex-direction: column; align-items: center;
     width: 100%;
   }
-  .mobile-nav-links li {
-    width: 100%; border-bottom: 1px solid rgba(201,168,76,0.08);
-  }
+  .mobile-nav-links li { width: 100%; border-bottom: 1px solid rgba(201,168,76,0.08); }
   .mobile-nav-links li:first-child { border-top: 1px solid rgba(201,168,76,0.08); }
   .mobile-nav-links a {
     display: block; padding: 1.6rem 2rem;
@@ -119,8 +112,7 @@
     transition: color 0.3s, background 0.3s;
   }
   .mobile-nav-links a:hover, .mobile-nav-links a:active {
-    color: var(--gold-lt);
-    background: rgba(201,168,76,0.05);
+    color: var(--gold-lt); background: rgba(201,168,76,0.05);
   }
 
   /* ── HERO ─────────────────────────────────────────── */
@@ -172,8 +164,7 @@
     margin-top: 1.6rem; font-size: clamp(0.75rem, 2vw, 0.85rem); letter-spacing: 0.10em;
     color: var(--muted); text-align: center; max-width: 400px;
     animation: fadeUp 1s 0.7s both;
-    padding: 0 1.5rem;
-    line-height: 1.9;
+    padding: 0 1.5rem; line-height: 1.9;
   }
   .wave-wrap {
     position: absolute; bottom: 0; left: 0; right: 0; height: 130px; overflow: hidden;
@@ -227,8 +218,7 @@
   .stat-value {
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 300; color: var(--gold-lt);
-    display: block; line-height: 1;
-    white-space: nowrap;
+    display: block; line-height: 1; white-space: nowrap;
   }
   .stat-label {
     font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
@@ -348,25 +338,31 @@
   }
   .photo-tile:hover .photo-tile-zoom { opacity: 1; transform: scale(1); }
 
-  /* ── MODAL ────────────────────────────────────────── */
+  /* ── PHOTO MODAL (FIXED for zoom) ─────────────────── */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 999;
     background: rgba(1,4,12,0.96);
     backdrop-filter: blur(12px);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: flex-start;           /* не center — иначе при зуме контент уезжает */
+    justify-content: center;
+    overflow-y: auto;                  /* scrollable при зуме */
     opacity: 0; pointer-events: none;
     transition: opacity 0.4s;
-    padding: 1rem;
+    padding: 1.5rem 1rem;
   }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal-inner {
     position: relative;
-    max-width: 900px; width: 100%;
+    width: min(100%, 780px); max-width: 780px;
+    height: min(88vh, 620px); min-height: 520px;
     display: flex; flex-direction: column; align-items: center;
     gap: 1.2rem;
+    margin: auto;  /* вертикальное центрирование когда контент меньше экрана */
+    padding: 0.5rem 0;
   }
   .modal-close {
-    position: absolute; top: -0.05rem; right: 0;
+    position: absolute; top: 0.75rem; right: 0.75rem;
     background: none; border: 1px solid rgba(201,168,76,0.3);
     color: var(--gold); width: 38px; height: 38px; border-radius: 50%;
     font-size: 1.1rem; cursor: pointer;
@@ -377,15 +373,21 @@
   .modal-close:hover { background: rgba(201,168,76,0.12); border-color: var(--gold); }
   .modal-img-wrap {
     position: relative; width: 100%;
+    flex: 1 1 auto;
     border: 1px solid rgba(201,168,76,0.2);
     border-radius: 3px; overflow: hidden;
     background: #010408;
-    aspect-ratio: 4/3;
+    /* убрали aspect-ratio — он был причиной бага при зуме */
     display: flex; align-items: center; justify-content: center;
+    min-height: 200px;
   }
   .modal-img {
-    max-width: 100%; max-height: 60vh;
-    width: 100%; height: 100%; object-fit: contain;
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     filter: sepia(10%) brightness(0.9);
     transition: opacity 0.3s;
   }
@@ -429,45 +431,240 @@
     margin-bottom: 0.6rem; display: block;
   }
 
-  /* ── ATTRACTIONS ──────────────────────────────────── */
-  .attr-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+  /* ── ATTRACTIONS CAROUSEL ─────────────────────────── */
+  .carousel-section {
+    position: relative;
     margin-top: 3.5rem;
   }
+
+  /* Градиентные «шторы» по краям */
+  .carousel-section::before,
+  .carousel-section::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 16px; /* не перекрывать скроллбар */
+    width: 80px;
+    pointer-events: none;
+    z-index: 3;
+    transition: opacity 0.3s;
+  }
+  .carousel-section::before {
+    left: 0;
+    background: linear-gradient(to right, var(--sky), transparent);
+  }
+  .carousel-section::after {
+    right: 0;
+    background: linear-gradient(to left, var(--sky), transparent);
+  }
+
+  .carousel-track {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201,168,76,0.25) transparent;
+    padding: 1rem 0 1.2rem;
+    /* небольшой горизонтальный отступ чтобы первая/последняя карточки не прятались за шторой */
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  .carousel-track::-webkit-scrollbar { height: 4px; }
+  .carousel-track::-webkit-scrollbar-track { background: transparent; }
+  .carousel-track::-webkit-scrollbar-thumb {
+    background: rgba(201,168,76,0.25); border-radius: 2px;
+  }
+
+  /* Стрелки карусели */
+  .carousel-arrows {
+    display: flex; justify-content: flex-end; gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .carousel-arrow {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(6,25,58,0.6);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-lt); font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s, border-color 0.3s, opacity 0.3s;
+    flex-shrink: 0;
+  }
+  .carousel-arrow:hover { border-color: var(--gold); background: rgba(201,168,76,0.1); }
+  .carousel-arrow:disabled { opacity: 0.25; pointer-events: none; }
+
+  /* Карточка достопримечательности */
   .attr-card {
+    flex: 0 0 300px;
+    scroll-snap-align: start;
     position: relative; overflow: hidden;
     border: 1px solid rgba(201,168,76,0.12); border-radius: 3px;
     background: rgba(6,25,58,0.4); backdrop-filter: blur(8px);
-    transition: transform 0.4s, border-color 0.4s, box-shadow 0.4s;
-    opacity: 0; transform: translateY(40px);
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94),
+                border-color 0.35s, box-shadow 0.35s;
+    opacity: 0; transform: translateY(30px);
   }
   .attr-card.visible { opacity: 1; transform: translateY(0); }
-  .attr-card:nth-child(1) { transition-delay: 0s; }
-  .attr-card:nth-child(2) { transition-delay: 0.15s; }
-  .attr-card:nth-child(3) { transition-delay: 0.3s; }
   .attr-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
     border-color: rgba(201,168,76,0.45);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,168,76,0.06);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.5), 0 0 30px rgba(201,168,76,0.06);
   }
+  .attr-card.visible:hover { transform: translateY(-6px); }
+
   .attr-img {
-    width: 100%; height: 220px; object-fit: cover; display: block;
+    width: 100%; height: 200px; object-fit: cover; display: block;
     filter: brightness(0.7) saturate(0.8);
     transition: filter 0.5s, transform 0.5s;
   }
   .attr-card:hover .attr-img { filter: brightness(0.85) saturate(1); transform: scale(1.04); }
-  .attr-body { padding: 2.2rem 1.5rem 1.8rem; }
+  .attr-body { padding: 1.6rem 1.4rem 1.4rem; }
   .attr-body h3 {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem; font-weight: 600; margin-bottom: 0.8rem;
-    color: var(--white); line-height: 1.2;
+    font-size: 1.25rem; font-weight: 600; margin-bottom: 0.6rem;
+    color: var(--white); line-height: 1.25;
   }
-  .attr-body p { font-size: 0.9rem; line-height: 1.8; color: var(--muted); font-weight: 300; }
+  .attr-body p { font-size: 0.85rem; line-height: 1.75; color: var(--muted); font-weight: 300; }
   .glow-line {
     display: block; width: 50px; height: 2px;
     background: linear-gradient(to right, transparent, var(--gold), transparent);
-    margin: 1.5rem 0;
+    margin: 1.2rem 0;
   }
+
+  /* Иконка «открыть» в углу карточки */
+  .attr-open-hint {
+    position: absolute; bottom: 1rem; right: 1rem;
+    font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--gold); opacity: 0;
+    transition: opacity 0.3s;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .attr-open-hint svg { width: 12px; height: 12px; }
+  .attr-card:hover .attr-open-hint { opacity: 1; }
+
+  /* Dots-индикатор */
+  .carousel-dots {
+    display: flex; justify-content: center; gap: 6px;
+    margin-top: 1rem;
+  }
+  .c-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(201,168,76,0.25);
+    transition: background 0.3s, transform 0.3s;
+    cursor: pointer;
+  }
+  .c-dot.active {
+    background: var(--gold);
+    transform: scale(1.4);
+  }
+
+  /* ── ATTRACTION MODAL ─────────────────────────────── */
+  .attr-modal-overlay {
+    position: fixed; inset: 0; z-index: 998;
+    background: rgba(1,4,12,0.95);
+    backdrop-filter: blur(14px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s;
+    padding: 2rem 1rem;
+  }
+  .attr-modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .attr-modal-inner {
+    position: relative;
+    max-width: 780px; width: min(100%, 780px);
+    height: min(88vh, 620px); min-height: 520px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(4,18,38,0.95);
+    margin: auto;
+  }
+
+  .attr-modal-img-wrap {
+    position: relative; overflow: hidden;
+    height: 100%; min-height: 320px;
+  }
+  .attr-modal-img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: brightness(0.75) saturate(0.85);
+    transition: opacity 0.3s;
+  }
+  .attr-modal-img.fading { opacity: 0; }
+  .attr-modal-img-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(2,8,22,0.5), transparent);
+  }
+  .attr-modal-num {
+    position: absolute; top: 1rem; left: 1rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem; font-weight: 700;
+    color: rgba(201,168,76,0.18); line-height: 1;
+  }
+
+  .attr-modal-body {
+    padding: 2.5rem 2rem 2rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    height: 100%;
+  }
+  .attr-modal-label {
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.8rem;
+  }
+  .attr-modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    font-weight: 600; line-height: 1.2;
+    color: var(--white); margin-bottom: 1rem;
+  }
+  .attr-modal-divider {
+    width: 50px; height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    margin-bottom: 1.2rem;
+  }
+  .attr-modal-text {
+    font-size: 0.88rem; line-height: 1.85;
+    color: var(--muted); font-weight: 300; flex: 1;
+  }
+
+  .attr-modal-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 2rem; padding-top: 1.2rem;
+    border-top: 1px solid rgba(201,168,76,0.1);
+  }
+  .attr-modal-nav-btns { display: flex; gap: 0.5rem; }
+  .attr-modal-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(4,18,38,0.8);
+    border: 1px solid rgba(201,168,76,0.25);
+    color: var(--gold-lt); font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .attr-modal-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+  .attr-modal-counter {
+    font-size: 0.72rem; letter-spacing: 0.15em; color: var(--muted);
+  }
+  .attr-modal-counter span { color: var(--gold); }
+
+  .attr-modal-close {
+    position: absolute; top: 0.8rem; right: 0.8rem;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(4,18,38,0.9);
+    border: 1px solid rgba(201,168,76,0.25);
+    color: var(--gold); font-size: 0.9rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.3s;
+    z-index: 10;
+  }
+  .attr-modal-close:hover { border-color: var(--gold); }
 
   /* ── FACTS ────────────────────────────────────────── */
   .facts-grid {
@@ -527,38 +724,22 @@
     font-style: italic; line-height: 1.7;
     color: var(--ice); margin-bottom: 1rem;
   }
-  .quote-author {
-    font-size: 0.65rem; letter-spacing: 0.2em; color: var(--gold);
-  }
+  .quote-author { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--gold); }
 
   /* ══════════════════════════════════════════════════
-     RESPONSIVE BREAKPOINTS
+     RESPONSIVE
   ══════════════════════════════════════════════════ */
-
-  /* ── ≤ 1024px ─────────────────────────────────────── */
   @media (max-width: 1024px) {
     nav { padding: 1rem 2rem; }
-    .attr-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .attr-card:nth-child(3) { grid-column: span 2; }
-    .attr-card:nth-child(3) .attr-img { height: 280px; }
-    .history-grid { gap: 3rem; }
   }
 
-  /* ── ≤ 860px ──────────────────────────────────────── */
   @media (max-width: 860px) {
-    /* NAV */
     nav { padding: 1rem 1.5rem; }
     .nav-links { display: none; }
     .burger { display: flex; }
     .mobile-nav { display: flex; }
-
-    /* SECTION */
     .section-inner { padding: 5rem 1.5rem; }
-
-    /* HISTORY */
     .history-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-
-    /* GALLERY */
     .photo-tile-grid {
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(4, 170px);
@@ -566,26 +747,17 @@
     .photo-tile:nth-child(1) { grid-column: span 2; }
     .photo-tile:nth-child(3) { grid-row: span 1; }
     .photo-tile:nth-child(6) { grid-column: span 2; }
-
-    /* ATTRACTIONS */
-    .attr-grid { grid-template-columns: 1fr; }
-    .attr-card:nth-child(3) { grid-column: span 1; }
-
-    /* FACTS */
     .facts-grid { grid-template-columns: 1fr; }
-
-    /* STATS */
     .stats-row { gap: 2rem 3rem; }
+    .attr-modal-inner { grid-template-columns: 1fr; }
+    .attr-modal-img-wrap { min-height: 220px; max-height: 260px; }
+    .attr-card { flex: 0 0 260px; }
   }
 
-  /* ── ≤ 640px ──────────────────────────────────────── */
   @media (max-width: 640px) {
     nav { padding: 0.9rem 1.2rem; }
     .nav-logo { font-size: 1.15rem; }
-
     .section-inner { padding: 4rem 1.2rem; }
-
-    /* GALLERY */
     .photo-tile-grid {
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: repeat(6, 140px);
@@ -593,55 +765,40 @@
     .photo-tile:nth-child(1) { grid-column: span 2; }
     .photo-tile:nth-child(3) { grid-row: span 1; grid-column: span 1; }
     .photo-tile:nth-child(6) { grid-column: span 2; }
-
-    /* STATS */
     .stats-row { gap: 1.5rem 2rem; padding: 2.5rem 1rem; }
     .stat-item { min-width: 100px; }
-
-    /* MODAL */
-    .modal-close {
-      top: -0.3rem; right: -0.3rem;
-      width: 34px; height: 34px; font-size: 0.9rem;
-    }
     .modal-nav-btn { width: 38px; height: 38px; font-size: 0.9rem; }
     .modal-prev { left: 0.3rem; }
     .modal-next { right: 0.3rem; }
     .modal-thumb { flex: 0 0 44px; height: 32px; }
-    .modal-img { max-height: 50vh; }
-
-    /* FACTS */
+    .modal-img { max-height: 45vh; }
     .fact-card { padding: 1.5rem 1.2rem; }
     .fact-num { font-size: 2.8rem; }
-
-    /* ATTR */
-    .attr-body { padding: 1.5rem 1.2rem 1.4rem; }
-    .attr-img { height: 200px; }
+    .attr-card { flex: 0 0 240px; }
+    .attr-modal-body { padding: 1.5rem 1.2rem 1.2rem; }
   }
 
-  /* ── ≤ 400px ──────────────────────────────────────── */
   @media (max-width: 400px) {
     .nav-logo { font-size: 1rem; letter-spacing: 0.06em; }
-
     .photo-tile-grid {
       grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(6, 120px);
     }
     .photo-tile-caption { display: none; }
-
     .stats-row { flex-direction: column; align-items: center; gap: 1.5rem; }
     .stat-item { width: 100%; max-width: 200px; }
-
     .section-title { font-size: 1.8rem; }
     .gallery-heading { font-size: 1.2rem; }
     .gallery-top-bar { flex-direction: column; align-items: flex-start; }
     .gallery-total-badge { align-self: flex-start; }
+    .attr-card { flex: 0 0 210px; }
   }
 
-  /* ── Touch hover fix ──────────────────────────────── */
   @media (hover: none) {
     .photo-tile-zoom { display: none; }
     .photo-tile-info { transform: translateY(0); }
     .photo-tile::after { opacity: 1; }
+    .attr-open-hint { opacity: 1; }
   }
 </style>
 </head>
@@ -650,7 +807,7 @@
 <div class="depth-bg" id="depthBg"></div>
 <canvas id="particles"></canvas>
 
-<!-- MODAL -->
+<!-- ── PHOTO MODAL ───────────────────────────────────── -->
 <div class="modal-overlay" id="photoModal" role="dialog" aria-modal="true">
   <div class="modal-inner">
     <button class="modal-close" id="modalClose" aria-label="Закрыть">✕</button>
@@ -668,11 +825,40 @@
   </div>
 </div>
 
+<!-- ── ATTRACTION MODAL ──────────────────────────────── -->
+<div class="attr-modal-overlay" id="attrModal" role="dialog" aria-modal="true">
+  <div class="attr-modal-inner">
+    <button class="attr-modal-close" id="attrModalClose">✕</button>
+    <div class="attr-modal-img-wrap">
+      <img class="attr-modal-img" id="attrModalImg" src="" alt="">
+      <div class="attr-modal-img-overlay"></div>
+      <span class="attr-modal-num" id="attrModalNum">01</span>
+    </div>
+    <div class="attr-modal-body">
+      <div>
+        <p class="attr-modal-label">Достопримечательность</p>
+        <h2 class="attr-modal-title" id="attrModalTitle"></h2>
+        <div class="attr-modal-divider"></div>
+        <p class="attr-modal-text" id="attrModalText"></p>
+      </div>
+      <div class="attr-modal-nav">
+        <span class="attr-modal-counter">
+          <span id="attrModalCur">1</span> / <span id="attrModalTotal">12</span>
+        </span>
+        <div class="attr-modal-nav-btns">
+          <button class="attr-modal-btn" id="attrModalPrev">&#8249;</button>
+          <button class="attr-modal-btn" id="attrModalNext">&#8250;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MOBILE NAV DRAWER -->
 <div class="mobile-nav" id="mobileNav" role="dialog" aria-modal="true" aria-label="Навигация">
   <ul class="mobile-nav-links">
     <li><a href="#history" class="mobile-link">История</a></li>
-    <li><a href="#gallery" class="mobile-link">Фотогалерея</a></li>   <!-- НОВЫЙ ПУНКТ -->
+    <li><a href="#gallery" class="mobile-link">Фотогалерея</a></li>
     <li><a href="#attractions" class="mobile-link">Достопримечательности</a></li>
     <li><a href="#facts" class="mobile-link">Факты</a></li>
   </ul>
@@ -683,7 +869,8 @@
   <a class="nav-logo" href="#">СЕВЕРОДВИНСК</a>
   <ul class="nav-links">
     <li><a href="#history">История</a></li>
-    <li><a href="#gallery">Фотогалерея</a></li>   <!-- НОВЫЙ ПУНКТ -->
+    <li><a href="#gallery">Фотогалерея</a></li>
+    <li><a href="#newPhotos">Новые фото</a></li>
     <li><a href="#attractions">Достопримечательности</a></li>
     <li><a href="#facts">Факты</a></li>
   </ul>
@@ -772,60 +959,21 @@
 <section id="attractions">
   <div class="section-inner">
     <p class="section-label reveal">Что посмотреть</p>
-    <h2 class="section-title reveal"><em>Достопримечательности</em></h2>
-    <p class="reveal" style="font-size:0.9rem; color: var(--muted); max-width: 520px; line-height: 1.8; margin-bottom: 0.5rem;">
-      Северодвинск бережно хранит свою уникальную историю —<br>от деревянных церквей поморских сел до стальных корпусов атомных субмарин.
-    </p>
-    <div class="attr-grid">
-      <div class="attr-card">
-        <img src="images/foto-muzey.jpg" alt="Музей судостроения и флота" class="attr-img">
-        <div class="attr-body">
-          <h3>Музей судостроения и флота</h3>
-          <span class="glow-line"></span>
-          <p>Единственный в России музей, посвященный истории отечественного военного кораблестроения. Уникальная коллекция моделей кораблей — от деревянных поморских судов до атомных подводных лодок.</p>
-        </div>
-      </div>
-      <div class="attr-card">
-        <img src="images/foto-stela.jpg" alt="Стела Город трудовой доблести" class="attr-img">
-        <div class="attr-body">
-          <h3>Стела «Город трудовой доблести»</h3>
-          <span class="glow-line"></span>
-          <p>Величественный монумент, установленный в честь присвоения Северодвинску почетного звания в 2020 году. Стела увековечивает подвиг корабелов, которые в годы войны ковали победу в цехах завода.</p>
-        </div>
-      </div>
-      <div class="attr-card">
-        <img src="images/foto-miritrud.jpg" alt="Мир и Труд" class="attr-img">
-        <div class="attr-body">
-          <h3>Скульптурно-мемориальная композиция «Мир и Труд»</h3>
-          <span class="glow-line"></span>
-          <p>Посвящена пятидесятилетию города Северодвинска. В скульптурных группах изображены все профессии, имеющие отношение к градообразующему предприятию.</p>
-        </div>
-      </div>
-      <div class="attr-card">
-        <img src="images/foto-fire.jpg" alt="Название" class="attr-img">
-        <div class="attr-body">
-          <h3>Вечный огонь</h3>
-          <span class="glow-line"></span>
-          <p>Вечный огонь в Северодвинске - мемориал, посвященный памяти погибших в годы Великой Отечественной войны. Он символизирует вечную память о подвиге народа и является важным местом для проведения памятных мероприятий и возложения цветов.</p>
-        </div>
-      </div>
-      <div class="attr-card">
-        <img src="images/foto-monastir.jpg" alt="Название" class="attr-img">
-        <div class="attr-body">
-          <h3>Николо-Корельский монастырь</h3>
-          <span class="glow-line"></span>
-          <p>Один из древнейших монастырей Русского Севера, основанный в XV веке и связанный с ранней историей региона.</p>
-        </div>
-      </div>
-      <div class="attr-card">
-        <img src="images/foto-lomonosov.jpg" alt="Название" class="attr-img">
-        <div class="attr-body">
-          <h3>Памятник Михаилу Ломоносову</h3>
-          <span class="glow-line"></span>
-          <p>Памятник великому ученому, установленный в городе и отражающий связь Русского Севера с его историей и культурой.</p>
-        </div>
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:0.5rem;">
+      <h2 class="section-title reveal" style="margin-bottom:0;"><em>Достопримечательности</em></h2>
+      <div class="carousel-arrows">
+        <button class="carousel-arrow" id="carouselPrev" aria-label="Назад">&#8249;</button>
+        <button class="carousel-arrow" id="carouselNext" aria-label="Вперёд">&#8250;</button>
       </div>
     </div>
+    <p class="reveal" style="font-size:0.9rem; color: var(--muted); max-width: 520px; line-height: 1.8; margin-bottom: 1rem;">
+      Северодвинск бережно хранит свою уникальную историю — от деревянных церквей поморских сел до стальных корпусов атомных субмарин.
+    </p>
+
+    <div class="carousel-section">
+      <div class="carousel-track" id="attrTrack"></div>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
   </div>
 </section>
 
@@ -849,14 +997,12 @@
 
 <footer>
   <p style="margin-top:0.1rem; font-size:0.8rem;">
-      <a href="https://yandex.ru/maps/?pt=39.8167,64.55&z=10&l=map" target="_blank" style="color: inherit; text-decoration: none;" title="Ссылка на Северодвинск в Яндекс картах">
-        Россия · Архангельская область · На берегу Белого моря
-      </a>
+    <a href="https://yandex.ru/maps/?pt=39.8167,64.55&z=10&l=map" target="_blank" style="color: inherit; text-decoration: none;">
+      Россия · Архангельская область · На берегу Белого моря
+    </a>
   </p>
-
   <div style="margin-top:0.7rem;">
     <a href="https://github.com/selfgeek-coder" target="_blank" style="display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:inherit;">
-      
       <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
         <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38
         0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
@@ -869,55 +1015,35 @@
         0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8
         c0-4.42-3.58-8-8-8z"/>
       </svg>
-
       <span>GitHub</span>
     </a>
   </div>
 </footer>
 
 <script>
-// ── BURGER MENU ─────────────────────────────────────
+// ── BURGER ───────────────────────────────────────────
 const burger    = document.getElementById('burgerBtn');
 const mobileNav = document.getElementById('mobileNav');
+function openMenu() { burger.classList.add('open'); burger.setAttribute('aria-expanded','true'); mobileNav.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMenu() { burger.classList.remove('open'); burger.setAttribute('aria-expanded','false'); mobileNav.classList.remove('open'); document.body.style.overflow=''; }
+burger.addEventListener('click', () => burger.classList.contains('open') ? closeMenu() : openMenu());
+document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', closeMenu));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (mobileNav.classList.contains('open')) closeMenu(); } });
 
-function openMenu() {
-  burger.classList.add('open');
-  burger.setAttribute('aria-expanded', 'true');
-  mobileNav.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeMenu() {
-  burger.classList.remove('open');
-  burger.setAttribute('aria-expanded', 'false');
-  mobileNav.classList.remove('open');
-  document.body.style.overflow = '';
-}
-burger.addEventListener('click', () => {
-  burger.classList.contains('open') ? closeMenu() : openMenu();
-});
-
-// Close on link click
-document.querySelectorAll('.mobile-link').forEach(link => {
-  link.addEventListener('click', closeMenu);
-});
-
-// Close on Escape
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && mobileNav.classList.contains('open')) closeMenu();
-});
-
-// ── PHOTO DATA ──────────────────────────────────────
+// ── PHOTO DATA ───────────────────────────────────────
 const PHOTOS = [
-  { src: 'images/foto-molotovsk-1.jpg',  caption: 'Улица Советская, Молотовск',           meta: '1939 год',  desc: 'Первая главная улица города. На заднем плане видны деревянные дома первой застройки' },
-  { src: 'images/foto-molotovsk-2.jpg',  caption: 'Строительство жилых кварталов',         meta: '1940 год',  desc: 'Два жилых дома' },
-  { src: 'images/foto-molotovsk-3.jpg',  caption: 'Кинотеатр "Россия"',                   meta: '~1940 год', desc: 'На афишах видна репертуарная программа того времени' },
-  { src: 'images/foto-molotovsk-4.jpg',  caption: 'Ягринский пляж',                       meta: '~1940 год', desc: 'Пляж на берегу Белого моря' },
-  { src: 'images/foto-molotovsk-5.jpg',  caption: 'Улица Профсоюзная',                    meta: '1939 год',  desc: 'На фото видна лодочная станция и строение школы №11' },
-  { src: 'images/foto-molotovsk-6.jpg',  caption: 'Парк культуры и отдыха',               meta: '1972 год',  desc: 'На фото видно как дети катаются на автодроме' },
-  { src: 'images/foto-molotovsk-7.jpg',  caption: 'В учебном отряде подводного плавания', meta: '1967 год',  desc: 'Леонид Брежнев в учебном отряде подводного плавания Беломорской Военной базы' },
-  { src: 'images/foto-molotovsk-8.jpg',  caption: 'Площадь имени М.В. Ломоносова',        meta: '1958 год',  desc: 'Возведение памятника имени М.В. Ломоносова' },
-  { src: 'images/foto-molotovsk-9.jpg',  caption: 'Драматический театр',                  meta: '1939 год',  desc: 'На фото виден Драматический театр, на афишах видны театры того времени' },
-  { src: 'images/foto-molotovsk-10.jpg', caption: 'Военный парад на площади',             meta: '1945 год',  desc: 'Военный оркестр, шеренги моряков и заводских рабочих, ликующая толпа' },
+  { src:'images/foto-molotovsk-11.jpg', caption:'У Николо-Корельского монастыря',      meta:'1920 год',  desc:'Художник Игорь Грабарь на катере у Николо-Корельского монастыря.' },
+  { src:'images/foto-molotovsk-1.jpg',  caption:'Улица Советская, Молотовск',          meta:'1939 год',  desc:'Первая главная улица города. На заднем плане видны деревянные дома первой застройки.' },
+  { src:'images/foto-molotovsk-2.jpg',  caption:'Строительство жилых кварталов',       meta:'1940 год',  desc:'Два жилых дома.' },
+  { src:'images/foto-molotovsk-3.jpg',  caption:'Кинотеатр "Россия"',                  meta:'~1940 год', desc:'На афишах видна репертуарная программа того времени.' },
+  { src:'images/foto-molotovsk-4.jpg',  caption:'Ягринский пляж',                      meta:'~1940 год', desc:'Пляж на берегу Белого моря.' },
+  { src:'images/foto-molotovsk-5.jpg',  caption:'Улица Профсоюзная',                   meta:'1939 год',  desc:'На фото видна лодочная станция и строение школы №11.' },
+  { src:'images/foto-molotovsk-6.jpg',  caption:'Парк культуры и отдыха',              meta:'1972 год',  desc:'На фото видно как дети катаются на автодроме.' },
+  { src:'images/foto-molotovsk-7.jpg',  caption:'В учебном отряде подводного плавания',meta:'1967 год',  desc:'Леонид Брежнев в учебном отряде подводного плавания Беломорской Военной базы.' },
+  { src:'images/foto-molotovsk-8.jpg',  caption:'Площадь имени М.В. Ломоносова',       meta:'1958 год',  desc:'Возведение памятника имени М.В. Ломоносова.' },
+  { src:'images/foto-molotovsk-9.jpg',  caption:'Драматический театр',                 meta:'1939 год',  desc:'На фото виден Драматический театр, на афишах видны спектакли того времени.' },
+  { src:'images/foto-molotovsk-10.jpg', caption:'Военный парад на площади',            meta:'1945 год',  desc:'Военный оркестр, шеренги моряков и заводских рабочих, ликующая толпа.' },
+  { src:'images/foto-molotovsk-12.jpg', caption:'Дом Советов',                         meta:'~1960 год', desc:'На фото виден "Дом Советов", сейчас это Военкомат.' },
 ];
 
 // ── BUILD PHOTO TILES ────────────────────────────────
@@ -936,77 +1062,181 @@ PHOTOS.forEach((p, i) => {
     <div class="photo-tile-info">
       <span class="photo-tile-caption">${p.caption}</span>
       <span class="photo-tile-year">${p.meta}</span>
-    </div>
-  `;
-  tile.addEventListener('click', () => openModal(i));
+    </div>`;
+  tile.addEventListener('click', () => openPhotoModal(i));
   tileGrid.appendChild(tile);
 });
 
-// ── MODAL ────────────────────────────────────────────
-let modalIndex = 0;
-const modal     = document.getElementById('photoModal');
-const modalImg  = document.getElementById('modalImg');
-const modalCap  = document.getElementById('modalCaption');
-const modalMeta = document.getElementById('modalMeta');
-const modalCnt  = document.getElementById('modalCounter');
-const thumbsEl  = document.getElementById('modalThumbs');
+// ── PHOTO MODAL ──────────────────────────────────────
+let photoIdx = 0;
+const photoModal = document.getElementById('photoModal');
+const modalImg   = document.getElementById('modalImg');
+const modalCap   = document.getElementById('modalCaption');
+const modalMeta  = document.getElementById('modalMeta');
+const modalCnt   = document.getElementById('modalCounter');
+const thumbsEl   = document.getElementById('modalThumbs');
 
 PHOTOS.forEach((p, i) => {
   const t = document.createElement('div');
   t.className = 'modal-thumb';
-  t.dataset.index = i;
   t.innerHTML = `<img src="${p.src}" alt="${p.caption}" loading="lazy">`;
-  t.addEventListener('click', () => setModalPhoto(i));
+  t.addEventListener('click', () => setPhotoModal(i));
   thumbsEl.appendChild(t);
 });
 
-function setModalPhoto(i) {
+function setPhotoModal(i) {
   if (i < 0) i = PHOTOS.length - 1;
   if (i >= PHOTOS.length) i = 0;
-  modalIndex = i;
+  photoIdx = i;
   modalImg.classList.add('fading');
-  setTimeout(() => {
-    modalImg.src = PHOTOS[i].src;
-    modalImg.alt = PHOTOS[i].caption;
-    modalImg.classList.remove('fading');
-  }, 150);
+  setTimeout(() => { modalImg.src = PHOTOS[i].src; modalImg.alt = PHOTOS[i].caption; modalImg.classList.remove('fading'); }, 150);
   modalCap.textContent  = PHOTOS[i].caption;
   modalMeta.textContent = PHOTOS[i].meta + ' — ' + PHOTOS[i].desc;
   modalCnt.textContent  = `${i + 1} / ${PHOTOS.length}`;
-  thumbsEl.querySelectorAll('.modal-thumb').forEach((t, j) => {
-    t.classList.toggle('active', j === i);
-  });
-  const activeThumb = thumbsEl.children[i];
-  if (activeThumb) activeThumb.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
+  thumbsEl.querySelectorAll('.modal-thumb').forEach((t, j) => t.classList.toggle('active', j === i));
+  const at = thumbsEl.children[i];
+  if (at) at.scrollIntoView({ inline:'center', behavior:'smooth', block:'nearest' });
 }
+function openPhotoModal(i) { setPhotoModal(i); photoModal.classList.add('open'); document.body.style.overflow='hidden'; }
+function closePhotoModal() { photoModal.classList.remove('open'); document.body.style.overflow=''; }
 
-function openModal(i) {
-  setModalPhoto(i);
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal() {
-  modal.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-document.getElementById('modalClose').addEventListener('click', closeModal);
-document.getElementById('modalPrev').addEventListener('click', () => setModalPhoto(modalIndex - 1));
-document.getElementById('modalNext').addEventListener('click', () => setModalPhoto(modalIndex + 1));
-modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-document.addEventListener('keydown', (e) => {
-  if (!modal.classList.contains('open')) return;
-  if (e.key === 'ArrowLeft')  setModalPhoto(modalIndex - 1);
-  if (e.key === 'ArrowRight') setModalPhoto(modalIndex + 1);
-  if (e.key === 'Escape')     closeModal();
-});
+document.getElementById('modalClose').addEventListener('click', closePhotoModal);
+document.getElementById('modalPrev').addEventListener('click', () => setPhotoModal(photoIdx - 1));
+document.getElementById('modalNext').addEventListener('click', () => setPhotoModal(photoIdx + 1));
+photoModal.addEventListener('click', e => { if (e.target === photoModal) closePhotoModal(); });
 
 let touchStartX = 0;
-modal.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
-modal.addEventListener('touchend', (e) => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(dx) > 50) setModalPhoto(modalIndex + (dx < 0 ? 1 : -1));
+photoModal.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive:true });
+photoModal.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - touchStartX; if (Math.abs(dx) > 50) setPhotoModal(photoIdx + (dx < 0 ? 1 : -1)); });
+
+// ── ATTRACTIONS DATA ─────────────────────────────────
+const ATTRS = [
+  { src:'images/foto-muzey.jpg',      title:'Музей судостроения и флота',                         text:'Единственный в России музей, посвященный истории отечественного военного кораблестроения. Уникальная коллекция моделей кораблей — от деревянных поморских судов до атомных подводных лодок.' },
+  { src:'images/foto-stela.jpg',      title:'Стела «Город трудовой доблести»',                     text:'Величественный монумент, установленный в честь присвоения Северодвинску почетного звания в 2020 году. Стела увековечивает подвиг корабелов, которые в годы войны ковали победу в цехах завода.' },
+  { src:'images/foto-miritrud.jpg',   title:'Скульптурно-мемориальная композиция «Мир и Труд»',    text:'Посвящена пятидесятилетию города Северодвинска. В скульптурных группах изображены все профессии, имеющие отношение к градообразующему предприятию.' },
+  { src:'images/foto-fire.jpg',       title:'Вечный огонь',                                        text:'Мемориал, посвященный памяти погибших в годы Великой Отечественной войны. Он символизирует вечную память о подвиге народа и является важным местом для проведения памятных мероприятий и возложения цветов.' },
+  { src:'images/foto-monastir.jpg',   title:'Николо-Корельский монастырь',                         text:'Один из древнейших монастырей Русского Севера, основанный в XV веке и связанный с ранней историей региона.' },
+  { src:'images/foto-lomonosov.jpg',  title:'Памятник Михаилу Ломоносову',                         text:'Памятник великому ученому, установленный в городе и отражающий связь Русского Севера с его историей и культурой.' },
+  { src:'images/foto-bor.jpg',        title:'Остров Ягры',                                         text:'Средоточием природных достопримечательностей является остров Ягры в устье реки Северная Двина. Излюбленное место для отдыха и рыбалки. Туристов привлекает Ягринский сосновый бор, раскинувшийся вдоль песчаного берега.' },
+  { src:'images/foto-chenslor.jpg',   title:'Памятный камень Ричарду Ченслору',                    text:'Ричард Ченслор — английский мореплаватель XVI века. В 1553 году он посетил русские берега Белого моря. Его визит послужил началу торговых отношений России с Англией. Памятный знак установлен на Набережной.' },
+  { src:'images/foto-gogol.jpg',      title:'Колесный речной пароход «Н.В. Гоголь»',               text:'Интересный городской объект, сочетающий историко-познавательные и развлекательные функции. Колесный пароход назван именем великого русского писателя Николая Васильевича Гоголя.' },
+  { src:'images/foto-neptun.jpg',     title:'Экскурсионный подводный аппарат «Нептун»',            text:'В 1991 г. впервые в истории страны была изготовлена подводная лодка для туристических прогулок. Произвели её на заводе «Севмаш» по проекту КБ «Рубин».' },
+  { src:'images/foto-yagrinlag.jpg',  title:'Невинным жертвам Ягринлага',                          text:'В память о политзаключенных, содержавшихся в исправительном учреждении на территории монастыря, в городе установлена стела — белая неотесанная стела авторства Г.А. Содомовского.' },
+  { src:'images/foto-voinskiy.jpg',   title:'Воинский мемориальный комплекс «Скорбящая мать-родина»', text:'Сосновый бор на острове Ягры — памятное историческое место, где покоятся бойцы Карельского фронта. Всего известно о 103 захороненных. На месте погребения возведен мемориальный комплекс.' },
+];
+
+// ── BUILD CAROUSEL ───────────────────────────────────
+const track = document.getElementById('attrTrack');
+const dotsEl = document.getElementById('carouselDots');
+
+ATTRS.forEach((a, i) => {
+  const card = document.createElement('div');
+  card.className = 'attr-card';
+  card.innerHTML = `
+    <img src="${a.src}" alt="${a.title}" class="attr-img" loading="lazy">
+    <div class="attr-body">
+      <h3>${a.title}</h3>
+      <span class="glow-line"></span>
+    </div>
+    <div class="attr-open-hint">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+      Подробнее
+    </div>`;
+  card.addEventListener('click', () => openAttrModal(i));
+  track.appendChild(card);
+
+  // dot
+  const dot = document.createElement('div');
+  dot.className = 'c-dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => scrollToCard(i));
+  dotsEl.appendChild(dot);
+});
+
+// Reveal карточек при загрузке (небольшая задержка)
+setTimeout(() => {
+  document.querySelectorAll('.attr-card').forEach((c, i) => {
+    setTimeout(() => c.classList.add('visible'), i * 60);
+  });
+}, 200);
+
+// Обновление dots при скролле
+function updateDots() {
+  const cards = track.querySelectorAll('.attr-card');
+  let closestIdx = 0, minDist = Infinity;
+  cards.forEach((c, i) => {
+    const dist = Math.abs(c.getBoundingClientRect().left - track.getBoundingClientRect().left);
+    if (dist < minDist) { minDist = dist; closestIdx = i; }
+  });
+  dotsEl.querySelectorAll('.c-dot').forEach((d, i) => d.classList.toggle('active', i === closestIdx));
+  document.getElementById('carouselPrev').disabled = closestIdx === 0;
+  document.getElementById('carouselNext').disabled = closestIdx === ATTRS.length - 1;
+}
+track.addEventListener('scroll', updateDots, { passive:true });
+
+function scrollToCard(i) {
+  const cards = track.querySelectorAll('.attr-card');
+  if (cards[i]) cards[i].scrollIntoView({ inline:'start', behavior:'smooth', block:'nearest' });
+}
+
+document.getElementById('carouselPrev').addEventListener('click', () => {
+  const dots = dotsEl.querySelectorAll('.c-dot');
+  let cur = 0;
+  dots.forEach((d, i) => { if (d.classList.contains('active')) cur = i; });
+  if (cur > 0) scrollToCard(cur - 1);
+});
+document.getElementById('carouselNext').addEventListener('click', () => {
+  const dots = dotsEl.querySelectorAll('.c-dot');
+  let cur = 0;
+  dots.forEach((d, i) => { if (d.classList.contains('active')) cur = i; });
+  if (cur < ATTRS.length - 1) scrollToCard(cur + 1);
+});
+
+// Инит стрелок
+document.getElementById('carouselPrev').disabled = true;
+
+// ── ATTRACTION MODAL ─────────────────────────────────
+let attrIdx = 0;
+const attrModal    = document.getElementById('attrModal');
+const attrModalImg = document.getElementById('attrModalImg');
+const attrModalNum = document.getElementById('attrModalNum');
+const attrModalTit = document.getElementById('attrModalTitle');
+const attrModalTxt = document.getElementById('attrModalText');
+const attrModalCur = document.getElementById('attrModalCur');
+const attrModalTot = document.getElementById('attrModalTotal');
+attrModalTot.textContent = ATTRS.length;
+
+function setAttrModal(i) {
+  if (i < 0) i = ATTRS.length - 1;
+  if (i >= ATTRS.length) i = 0;
+  attrIdx = i;
+  attrModalImg.classList.add('fading');
+  setTimeout(() => { attrModalImg.src = ATTRS[i].src; attrModalImg.alt = ATTRS[i].title; attrModalImg.classList.remove('fading'); }, 150);
+  attrModalNum.textContent = String(i + 1).padStart(2, '0');
+  attrModalTit.textContent = ATTRS[i].title;
+  attrModalTxt.textContent = ATTRS[i].text;
+  attrModalCur.textContent = i + 1;
+}
+function openAttrModal(i) { setAttrModal(i); attrModal.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeAttrModal() { attrModal.classList.remove('open'); document.body.style.overflow=''; }
+
+document.getElementById('attrModalClose').addEventListener('click', closeAttrModal);
+document.getElementById('attrModalPrev').addEventListener('click', () => setAttrModal(attrIdx - 1));
+document.getElementById('attrModalNext').addEventListener('click', () => setAttrModal(attrIdx + 1));
+attrModal.addEventListener('click', e => { if (e.target === attrModal) closeAttrModal(); });
+
+let attrTouchX = 0;
+attrModal.addEventListener('touchstart', e => { attrTouchX = e.touches[0].clientX; }, { passive:true });
+attrModal.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - attrTouchX; if (Math.abs(dx) > 50) setAttrModal(attrIdx + (dx < 0 ? 1 : -1)); });
+
+// Общий Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePhotoModal(); closeAttrModal(); closeMenu(); }
+  if (e.key === 'ArrowLeft')  { if (photoModal.classList.contains('open')) setPhotoModal(photoIdx-1); if (attrModal.classList.contains('open')) setAttrModal(attrIdx-1); }
+  if (e.key === 'ArrowRight') { if (photoModal.classList.contains('open')) setPhotoModal(photoIdx+1); if (attrModal.classList.contains('open')) setAttrModal(attrIdx+1); }
 });
 
 // ── STARS ────────────────────────────────────────────
@@ -1057,11 +1287,11 @@ window.addEventListener('scroll', () => {
 const io = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
-document.querySelectorAll('.reveal, .tl-item, .attr-card, .fact-card').forEach(el => io.observe(el));
+document.querySelectorAll('.reveal, .tl-item, .fact-card').forEach(el => io.observe(el));
 
-// ── MOUSE PARALLAX (desktop only) ───────────────────
+// ── MOUSE PARALLAX ───────────────────────────────────
 if (window.matchMedia('(hover: hover)').matches) {
-  document.addEventListener('mousemove', (e) => {
+  document.addEventListener('mousemove', e => {
     const xPct = (e.clientX / window.innerWidth - 0.5) * 10;
     const yPct = (e.clientY / window.innerHeight - 0.5) * 6;
     const sub = document.querySelector('.sub');
