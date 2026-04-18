@@ -522,7 +522,7 @@
   .attr-body { padding: 1.6rem 1.4rem 1.4rem; }
   .attr-body h3 {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.25rem; font-weight: 600; margin-bottom: 0.6rem;
+    font-size: 1.25rem; font-weight: 600; margin-bottom: 0.2rem;
     color: var(--white); line-height: 1.25;
   }
   .attr-body p { font-size: 0.85rem; line-height: 1.75; color: var(--muted); font-weight: 300; }
@@ -576,10 +576,12 @@
 
   .attr-modal-inner {
     position: relative;
-    max-width: 780px; width: min(100%, 780px);
-    height: min(88vh, 620px); min-height: 520px;
+    max-width: 900px;
+    width: min(100%, 900px);
+    height: min(88vh, 620px);
+    min-height: 520px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 1fr;
     gap: 0;
     border: 1px solid rgba(201,168,76,0.2);
     border-radius: 4px;
@@ -588,12 +590,29 @@
     margin: auto;
   }
 
+  .attr-modal-body {
+    padding: 2.5rem 2rem 2rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
   .attr-modal-img-wrap {
-    position: relative; overflow: hidden;
-    height: 100%; min-height: 320px;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #020810;
   }
   .attr-modal-img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    display: block;
     filter: brightness(0.75) saturate(0.85);
     transition: opacity 0.3s;
   }
@@ -601,6 +620,7 @@
   .attr-modal-img-overlay {
     position: absolute; inset: 0;
     background: linear-gradient(135deg, rgba(2,8,22,0.5), transparent);
+    
   }
   .attr-modal-num {
     position: absolute; top: 1rem; left: 1rem;
@@ -609,11 +629,6 @@
     color: rgba(201,168,76,0.18); line-height: 1;
   }
 
-  .attr-modal-body {
-    padding: 2.5rem 2rem 2rem;
-    display: flex; flex-direction: column; justify-content: space-between;
-    height: 100%;
-  }
   .attr-modal-label {
     font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
     color: var(--gold); margin-bottom: 0.8rem;
@@ -775,7 +790,6 @@
     .fact-card { padding: 1.5rem 1.2rem; }
     .fact-num { font-size: 2.8rem; }
     .attr-card { flex: 0 0 240px; }
-    .attr-modal-body { padding: 1.5rem 1.2rem 1.2rem; }
   }
 
   @media (max-width: 400px) {
@@ -870,7 +884,6 @@
   <ul class="nav-links">
     <li><a href="#history">История</a></li>
     <li><a href="#gallery">Фотогалерея</a></li>
-    <li><a href="#newPhotos">Новые фото</a></li>
     <li><a href="#attractions">Достопримечательности</a></li>
     <li><a href="#facts">Факты</a></li>
   </ul>
@@ -1136,7 +1149,6 @@ ATTRS.forEach((a, i) => {
     <img src="${a.src}" alt="${a.title}" class="attr-img" loading="lazy">
     <div class="attr-body">
       <h3>${a.title}</h3>
-      <span class="glow-line"></span>
     </div>
     <div class="attr-open-hint">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
